@@ -17,8 +17,8 @@ import java.util.concurrent.Executors;
 public class StudyDashboard {
 
     private final int totalNumberOfEvents;
-    private final List<Participant> participants;
-    private final Participant[] firstParticipantsForEachEvent;
+    private final List<Participant> participants; // 이것도 메서드 내에 있던 걸 필드로 옮긴 거임
+    private final Participant[] firstParticipantsForEachEvent; // 이것도 메서드 내에 있던 걸 필드로 옮긴 거임
 
     public StudyDashboard(int totalNumberOfEvents) {
         this.totalNumberOfEvents = totalNumberOfEvents;
@@ -32,12 +32,16 @@ public class StudyDashboard {
     }
 
     private void print() throws IOException, InterruptedException {
-        GHRepository ghRepository = getGhRepository();
+        checkGithubIssues(getGhRepository());
+        new StudyPrinter(this.totalNumberOfEvents, this.participants).execute();
+        printFirstParticipants(); // 이것도 한줄짜리를 가독성과 의도를 보여주기 위해 메소드로 분리함
+    }
 
+    private void checkGithubIssues(GHRepository ghRepository) throws InterruptedException {
         ExecutorService service = Executors.newFixedThreadPool(8);
         CountDownLatch latch = new CountDownLatch(totalNumberOfEvents);
 
-        for (int index = 1 ; index <= totalNumberOfEvents ; index++) {
+        for (int index = 1; index <= totalNumberOfEvents; index++) {
             int eventId = index;
             service.execute(new Runnable() {
                 @Override
@@ -45,20 +49,8 @@ public class StudyDashboard {
                     try {
                         GHIssue issue = ghRepository.getIssue(eventId);
                         List<GHIssueComment> comments = issue.getComments();
-                        Date firstCreatedAt = null;
-                        Participant first = null;
-
-                        for (GHIssueComment comment : comments) {
-                            Participant participant = findParticipant(comment.getUserName(), participants);
-                            participant.setHomeworkDone(eventId);
-
-                            if (firstCreatedAt == null || comment.getCreatedAt().before(firstCreatedAt)) {
-                                firstCreatedAt = comment.getCreatedAt();
-                                first = participant;
-                            }
-                        }
-
-                        firstParticipantsForEachEvent[eventId - 1] = first;
+                        checkHomework(comments, eventId);
+                        firstParticipantsForEachEvent[eventId - 1] = findFirst(comments);
                         latch.countDown();
                     } catch (IOException e) {
                         throw new IllegalArgumentException(e);
@@ -69,9 +61,26 @@ public class StudyDashboard {
 
         latch.await();
         service.shutdown();
+    }
 
-        new StudyPrinter(this.totalNumberOfEvents, this.participants).execute();
-        printFirstParticipants();
+    private Participant findFirst(List<GHIssueComment> comments) throws IOException {
+        Date firstCreatedAt = null;
+        Participant first = null;
+        for (GHIssueComment comment : comments) {
+            Participant participant = findParticipant(comment.getUserName(), participants);
+            if (firstCreatedAt == null || comment.getCreatedAt().before(firstCreatedAt)) {
+                firstCreatedAt = comment.getCreatedAt();
+                first = participant;
+            }
+        }
+        return first;
+    }
+
+    private void checkHomework(List<GHIssueComment> comments, int eventId) {
+        for (GHIssueComment comment : comments) {
+            Participant participant = findParticipant(comment.getUserName(), participants);
+            participant.setHomeworkDone(eventId);
+        }
     }
 
     private void printFirstParticipants() {
