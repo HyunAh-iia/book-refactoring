@@ -29,7 +29,10 @@ public class StudyDashboard {
 
     private void print() throws IOException, InterruptedException {
         checkGithubIssues(getGhRepository());
-        new StudyPrinter(this.totalNumberOfEvents, this.participants, PrinterMode.MARKDOWN).execute();
+        // 다형성을 활용해서 조건문을 없앴음
+        // 만약 동적으로 변환하길 원하면 팩토리 메서드를 만들어서 삭제했던 PrintMode에 따라 스위치로 분기해서 인스턴스를 반환해줄 수도 있겠지
+        // (백기선님) 근데 동적이어도 변경하려면 어차피 넘겨주는 변수값을 수정해야하니까, 그럴바에는 직접 사용할 프린터를 지정하는것도 괜찮을듯
+        new ConsolePrinter(this.totalNumberOfEvents, this.participants).execute();
     }
 
     private GHRepository getGhRepository() throws IOException {
