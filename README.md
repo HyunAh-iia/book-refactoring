@@ -1,9 +1,11 @@
 # 리팩토링
 개발자 필독서 [리팩토링](http://www.yes24.com/Product/Goods/89649360) 을 다른 사람들과 함께 읽고싶어서 백기선님의
 [코딩으로 학습하는 리팩토링](!https://www.inflearn.com/course/%EB%A6%AC%ED%8C%A9%ED%86%A0%EB%A7%81) 강의를 수강함
+![](http://image.yes24.com/goods/89649360/XL)
+
 ### 환경설정
 - Java 17 : Java 14 이후에 지원되는 record 기능을 초반(1~4)에 사용했기 때문에 jdk 17 다운로드 필요함. jdk는 AWS에서 제공하는 corretto나 openjdk를 추천
-- Github Token을 발급하여 (mac기준) 사용자 디렉토리에 `.github` 파일 생성 후 `oauth={github-access-token}` 입력해야함  
+- Github Token을 발급하여 (mac기준) 사용자 디렉토리에 `.github` 파일 생성 후 `oauth={github-access-token}` 입력해야함 
 
 ### 목차
 1. 이상한 이름 (Mysterious Name)
