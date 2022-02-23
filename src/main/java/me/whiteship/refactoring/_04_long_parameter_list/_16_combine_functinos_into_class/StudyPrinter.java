@@ -7,6 +7,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+/*
+리팩토링 16 을 통해 새로운 StudyPrinter 클래스에 유사한 메서드들이 모였음
+
+4. Long Parameter List: 16. Combine Functions into Class
+
+여러 함수를 클래스로 묶기
+• 비슷한 매개변수 목록을 여러 함수에서 사용하고 있다면 해당 메소드를 모아서 클래스를 만들 수 있다.
+• 클래스 내부로 메소드를 옮기고, 데이터를 필드로 만들면 메소드에 전달해야 하는 매개변수 목록도 줄일 수 있다.
+* */
 public class StudyPrinter {
 
     private int totalNumberOfEvents;
